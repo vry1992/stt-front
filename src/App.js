@@ -6,22 +6,19 @@ function App() {
   const [first, setFirst] = useState(null);
   const [second, setSecond] = useState(null);
 
-  useEffect(() => {
-    if (!first || !second) return;
+  const send = async () => {
+    const formData = new FormData();
+    formData.append('audio', first);
+    formData.append('audio', second);
+    await fetch('http://localhost:3001/transcribe', {
+      method: 'POST',
+      body: formData
+    })
+  }
 
-    const send = async () => {
-      const formData = new FormData();
-      formData.append('audio', first);
-      formData.append('audio', second);
-      await fetch('http://localhost:3001/', {
-        method: 'POST',
-        body: formData
-      })
-    }
-    send()
-  }, [first, second])
+
   return (
-    <form>
+    <form onSubmit={(e) => e.preventDefault()}>
       <input type="file" name="first" onChange={(event) => {
         const file = event.target.files[0]; // Get the first selected file
         setFirst(file)
@@ -30,6 +27,7 @@ function App() {
         const file = event.target.files[0]; // Get the first selected file
         setSecond(file)
       }}/>
+      <button onClick={send}>Go</button>
     </form>
   );
 }
